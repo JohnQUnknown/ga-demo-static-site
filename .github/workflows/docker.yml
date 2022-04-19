@@ -13,9 +13,9 @@ jobs:
         uses: actions/checkout@v3
       - name: Configure outputs
         id: vars
-        run: echo "::set-output name=CONTAINER_TAG=${{ env.RUNNER_OS }}-${{ github.sha }}"
+        run: echo "::set-output name=CONTAINER_TAG::${{ env.RUNNER_OS }}-${{ github.sha }}"
       - name: DEBUG
-        run: echo "${{ env.CONTAINER_TAG }}" && ls -lah
+        run: echo "${{ steps.vars.outputs.CONTAINER_TAG }}" && ls -lah
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
