@@ -10,8 +10,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
       - name: Configure outputs
-        id: vars
-        run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+        run: echo "SHORT_SHA=${{ github.sha }}" >> $GITHUB_ENV
       - name: DEBUG
         run: echo "${SHORT_SHA}" && ls -lah
       - name: Set up QEMU
@@ -30,7 +29,7 @@ jobs:
           push: true
           context: .
           platforms: linux/amd64,linux/arm64
-          tags: "emiliocastro.jfrog.io/default-docker-virtual/nginx-demo:${{ github.sha }}"
+          tags: "emiliocastro.jfrog.io/default-docker-virtual/nginx-demo:${SHORT_SHA}"
   webhook:
     name: Redeploy webhook call
     runs-on: [gcp-runner]
@@ -40,4 +39,4 @@ jobs:
         uses: joelwmale/webhook-action@master
         env:
           WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL  }}
-          body: "{ 'sha': ${{ github.sha }} }"
+          body: "{ 'short-sha': ${SHORT_SHA} }"
