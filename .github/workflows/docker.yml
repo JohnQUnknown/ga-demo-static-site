@@ -7,15 +7,13 @@ jobs:
   docker:
     runs-on: [gcp-runner]
     outputs:
-      container_tag: ${{ steps.vars.outputs.CONTAINER_TAG }}
+      container_tag: ${{ steps.container-tag.outputs.CONTAINER_TAG }}
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-      - name: Configure outputs
-        id: vars
+      - name: Configure container tag
+        id: container-tag
         run: echo "::set-output name=CONTAINER_TAG::linux-${{ github.sha }}"
-      - name: DEBUG
-        run: echo "${{ steps.vars.outputs.CONTAINER_TAG }}" && ls -lah
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -32,14 +30,17 @@ jobs:
           push: true
           context: .
           platforms: linux/amd64,linux/arm64
-          tags: "emiliocastro.jfrog.io/default-docker-virtual/nginx-demo:${{ steps.vars.outputs.CONTAINER_TAG }}"
+          tags: "emiliocastro.jfrog.io/default-docker-virtual/nginx-demo:${{ steps.container-tag.outputs.CONTAINER_TAG }}"
   webhook:
     name: Redeploy webhook call
     runs-on: [gcp-runner]
     needs: [docker]
     steps:
+      - name: Generate container name
+        id: container-name
+        run: echo "::set-output name=CONTAINER_NAME::test-nginx"
       - name: Deploy docker container webhook
         uses: joelwmale/webhook-action@master
         with:
           url: ${{ secrets.DEPLOY_WEBHOOK_URL  }}
-          body: '{ "container-tag": "${{ needs.docker.outputs.container_tag }}" }'
+          body: '{ "image": "emiliocastro.jfrog.io/default-docker-virtual/nginx-demo:${{ needs.docker.outputs.container_tag }}", "container-name": "${{ steps.container-name.outputs.CONTAINER_NAME }}" }'
