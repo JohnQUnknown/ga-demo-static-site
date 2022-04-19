@@ -5,7 +5,7 @@ on:
       - 'main'
 jobs:
   docker:
-    runs-on: gcp-runner
+    runs-on: [gcp-runner, ubuntu-latest]
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
