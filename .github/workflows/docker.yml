@@ -30,4 +30,4 @@ jobs:
           push: true
           context: .
           platforms: linux/amd64,linux/arm64
-          tags: "emiliocastro.jfrog.io/nginx-demo:${{ github.sha }}"
+          tags: "emiliocastro.jfrog.io/default-docker-virtual/nginx-demo:${{ github.sha }}"
