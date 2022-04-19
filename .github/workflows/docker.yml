@@ -40,4 +40,4 @@ jobs:
         uses: joelwmale/webhook-action@master
         env:
           WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL  }}
-          payload: "{ 'head_commit.id': ${{ github.sha }}}"
+          body: "{ 'sha': ${{ github.sha }} }"
